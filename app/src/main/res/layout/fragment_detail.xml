@@ -1,3 +1,7 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,7 +13,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.azzaahmed.movie.DetailActivityFragment"
     tools:showIn="@layout/activity_detail">
-
     <TextView
         android:id="@+id/detail_text1"
         android:text="hello"
@@ -17,19 +20,39 @@
         android:layout_width="wrap_content"
         android:padding="5dp"
         />
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/detail_image">
-    </ImageView>
 
-    <TextView
-        android:id="@+id/detail_text2"
-        android:text="hello"
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        >
+        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/detail_image">
+        </ImageView>
+    <Button
+
+        android:id="@+id/btn1"
         android:layout_width="wrap_content"
-        android:padding="5dp"
-        />
+        android:layout_height="wrap_content"
+        android:text="Fav."
+       >
+    </Button>
+
+        <TextView
+            android:id="@+id/detail_text2"
+            android:text="hello"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:padding="5dp"
+            />
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/detail_text3"
         android:text="hello"
@@ -45,5 +68,17 @@
         android:padding="5dp"
         />
 
-
+    <ListView
+        android:id="@+id/listview_trailer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        />
+    <ListView
+        android:id="@+id/listview_review"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        />
 </LinearLayout>
+</ScrollView>

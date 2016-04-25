@@ -14,7 +14,8 @@
     <string name="pref_high_rated" translatable="false">Highest Rate</string>
     <string name="pref_sort_high" translatable="false">Highest Rate</string>
     <string name="pref_sort_popular" translatable="false">Most popular</string>
+    <string name="pref_sort_favorite" translatable="false">Favorites</string>
     <string name="pref_sort_label_highest" translatable="false">Highest Rate</string>
     <string name="pref_sort_label_popular" translatable="false">Most popular</string>
-
+    <string name="pref_sort_label_favorite" translatable="false">Favorites</string>
 </resources>

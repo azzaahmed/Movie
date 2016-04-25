@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.azzaahmed.movie.data.MovieDbHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -50,12 +51,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-//        imageAdapter =
-//                new ArrayAdapter<String>(
-//                        getActivity(), // The current context (this activity)
-//                        R.layout.image_item, // The name of the layout ID.
-//                        R.id.grid_item_imageview, // The ID of the textview to populate.
-//                        new ArrayList<String>());
+
 
          gridview = (GridView) rootView.findViewById(R.id.gridview);
          imageAdapter =new ImageListAdapter(getActivity(), new ArrayList<String>());
@@ -65,10 +61,10 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 //                String forecast =imageAdapter.getItem(position);
-                GetMovieInfo MovObj=  MoviesArray.get(position);
+                GetMovieInfo MovObj = MoviesArray.get(position);
 
 //                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
-               Intent intent = new Intent(getActivity(),DetailActivity.class).putExtra("My Class",MovObj);
+                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("My Class", MovObj);
                 startActivity(intent);
             }
         });
@@ -136,14 +132,14 @@ public class MainActivityFragment extends Fragment {
         private String[] getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
 
-            // These are the names of the JSON objects that need to be extracted.
+            // These are the names of the JSON objects that need to be extracted. the values must be exactly the same as the json strings
             final String Poster_Path = "poster_path";
             final String Original_title = "original_title";
             final String Overview = "overview";
             final String Released_Date = "release_date";
             final String Vote_average = "vote_average";
             final String Results = "results";
-
+            final String Id = "id";
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(Results);
 
@@ -169,10 +165,10 @@ public class MainActivityFragment extends Fragment {
                 String Path = movie_info.getString(Poster_Path);
                 String OriginalTitle = movie_info.getString(Original_title);
                 String Overviews = movie_info.getString(Overview);
-
+                int Movie_id = movie_info.getInt(Id);
                 int Vote = movie_info.getInt(Vote_average);
                 String Released_date = movie_info.getString(Released_Date);
-                MoviesArray.add(new GetMovieInfo(Path,OriginalTitle,Overviews,Released_date,Vote));
+                MoviesArray.add(new GetMovieInfo(Path,OriginalTitle,Overviews,Released_date,Vote,Movie_id));
 
                 resultStrs[i] = "http://image.tmdb.org/t/p/w185"+Path;
             }
@@ -188,85 +184,109 @@ public class MainActivityFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
+           boolean flag=true;
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
 
-            try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String Sort_value = sharedPrefs.getString(
+                    getString(R.string.pref_sort_key),
+                    getString(R.string.pref_most_popular_default));
+            String Movie_BASE_URL="";
+            if(Sort_value.equals("Most popular")) {
+                Movie_BASE_URL =
+                        "http://api.themoviedb.org/3/movie/popular?";
 
-                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-                String Sort_value = sharedPrefs.getString(
-                        getString(R.string.pref_sort_key),
-                        getString(R.string.pref_most_popular_default));
-                String Movie_BASE_URL;
-if(Sort_value.equals("Most popular")) {
-     Movie_BASE_URL =
-            "http://api.themoviedb.org/3/movie/popular?";
-}
-                else {
-    Movie_BASE_URL =
-            "http://api.themoviedb.org/3/movie/top_rated?";
-}
-                final String APPID_PARAM = "api_key";
-                Uri builtUri = Uri.parse(Movie_BASE_URL)
-                        .buildUpon()
-                        .appendQueryParameter(APPID_PARAM, "")
-                        .build();
-                URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG,"built URI"+builtUri.toString());
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    movieJsonStr = null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    movieJsonStr = null;
-                }
-                movieJsonStr = buffer.toString();
-
-                Log.v(LOG_TAG, "movie json string to check data:  " + movieJsonStr);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
-                movieJsonStr = null;
-            } finally{
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
             }
-            try {
-                return getMovieDataFromJson(movieJsonStr);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG,e.getMessage(),e);
-                e.printStackTrace();
+            else if(Sort_value.equals("Highest Rate")){
+                Movie_BASE_URL =
+                        "http://api.themoviedb.org/3/movie/top_rated?";
             }
+            else{
+                flag=false;
+            }
+               if(flag) {
+                   try {
+
+
+                       final String APPID_PARAM = "api_key";
+                       Uri builtUri = Uri.parse(Movie_BASE_URL)
+                               .buildUpon()
+                               .appendQueryParameter(APPID_PARAM, "")
+                               .build();
+                       URL url = new URL(builtUri.toString());
+                       Log.v(LOG_TAG, "built URI" + builtUri.toString());
+                       // Create the request to OpenWeatherMap, and open the connection
+                       urlConnection = (HttpURLConnection) url.openConnection();
+                       urlConnection.setRequestMethod("GET");
+                       urlConnection.connect();
+
+                       // Read the input stream into a String
+                       InputStream inputStream = urlConnection.getInputStream();
+                       StringBuffer buffer = new StringBuffer();
+                       if (inputStream == null) {
+                           // Nothing to do.
+                           movieJsonStr = null;
+                       }
+                       reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                       String line;
+                       while ((line = reader.readLine()) != null) {
+                           // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                           // But it does make debugging a *lot* easier if you print out the completed
+                           // buffer for debugging.
+                           buffer.append(line + "\n");
+                       }
+
+                       if (buffer.length() == 0) {
+                           // Stream was empty.  No point in parsing.
+                           movieJsonStr = null;
+                       }
+                       movieJsonStr = buffer.toString();
+
+                       Log.v(LOG_TAG, "movie json string to check data:  " + movieJsonStr);
+                   } catch (IOException e) {
+                       Log.e(LOG_TAG, "Error ", e);
+                       // If the code didn't successfully get the weather data, there's no point in attempting
+                       // to parse it.
+                       movieJsonStr = null;
+                   } finally {
+                       if (urlConnection != null) {
+                           urlConnection.disconnect();
+                       }
+                       if (reader != null) {
+                           try {
+                               reader.close();
+                           } catch (final IOException e) {
+                               Log.e(LOG_TAG, "Error closing stream", e);
+                           }
+                       }
+                   }
+                   try {
+                       return getMovieDataFromJson(movieJsonStr);
+                   } catch (JSONException e) {
+                       Log.e(LOG_TAG, e.getMessage(), e);
+                       e.printStackTrace();
+                   }
+               }
+            else if(!flag){
+
+                   MovieDbHelper MovieHelper = new MovieDbHelper (getActivity(),null,null,1);
+
+                 String  path[]= MovieHelper.fetchFavoritesImage();
+                  String title[]=MovieHelper.fetchFavoritesName();
+                  String overview[]=MovieHelper.fetchFavoritesOverview();
+                  String date[]=MovieHelper.fetchFavoritesDate();
+                  int  vote[]= MovieHelper.fetchFavoritesVote();
+                  int movieId[]=MovieHelper.fetchFavoritesId();
+                   for(int i = 0; i < MovieHelper.fetchFavoritesImage().length; i++) {
+
+                       MoviesArray.add(new GetMovieInfo(path[i],title[i],overview[i],date[i],vote[i],movieId[i]));
+                   }
+                   return  MovieHelper.fetchFavoritesImage();
+               }
+
             return null;
         }
 
