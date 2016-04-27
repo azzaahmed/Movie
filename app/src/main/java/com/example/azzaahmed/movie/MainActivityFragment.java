@@ -42,7 +42,7 @@ public class MainActivityFragment extends Fragment {
     }
         private ImageView mainImage;
     private GridView gridview;
-      private listener mListener;
+
     private ImageListAdapter imageAdapter;
     private ArrayList<GetMovieInfo> MoviesArray = new ArrayList<GetMovieInfo>();
 
@@ -207,7 +207,7 @@ public class MainActivityFragment extends Fragment {
                        final String APPID_PARAM = "api_key";
                        Uri builtUri = Uri.parse(Movie_BASE_URL)
                                .buildUpon()
-                               .appendQueryParameter(APPID_PARAM, "")
+                               .appendQueryParameter(APPID_PARAM, " ")
                                .build();
                        URL url = new URL(builtUri.toString());
                        Log.v(LOG_TAG, "built URI" + builtUri.toString());
@@ -297,8 +297,4 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    //to make mlistener = mainactivity
-    public void setNameListener(listener nameListener) {
-        mListener=nameListener;
-    }
 }

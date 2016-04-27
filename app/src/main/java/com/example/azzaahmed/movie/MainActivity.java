@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
-public class MainActivity extends AppCompatActivity implements listener  {
+public class MainActivity extends AppCompatActivity  {
     boolean mTwoPane;
 
     @Override
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements listener  {
 
         if (null == savedInstanceState) {
             MainActivityFragment Fragment = new MainActivityFragment();
-            Fragment.setNameListener(this);
+
             Log.v("check rotate", " rotate in if " );
             getSupportFragmentManager().beginTransaction().add(R.id.flPanel_One, Fragment).commit();
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements listener  {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+
     public void onMovieSelect(GetMovieInfo obj) {
                 if (mTwoPane) {
 
