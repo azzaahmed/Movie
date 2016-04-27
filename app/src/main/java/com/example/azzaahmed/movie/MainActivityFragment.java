@@ -1,8 +1,9 @@
 package com.example.azzaahmed.movie;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class MainActivityFragment extends Fragment {
     }
         private ImageView mainImage;
     private GridView gridview;
-
+      private listener mListener;
     private ImageListAdapter imageAdapter;
     private ArrayList<GetMovieInfo> MoviesArray = new ArrayList<GetMovieInfo>();
 
@@ -50,9 +51,6 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-
-
          gridview = (GridView) rootView.findViewById(R.id.gridview);
          imageAdapter =new ImageListAdapter(getActivity(), new ArrayList<String>());
         gridview.setAdapter(imageAdapter);
@@ -64,8 +62,11 @@ public class MainActivityFragment extends Fragment {
                 GetMovieInfo MovObj = MoviesArray.get(position);
 
 //                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("My Class", MovObj);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("My Class", MovObj);
+//                startActivity(intent);
+               // mListener.onMovieSelect(MovObj);
+                ((MainActivity) getActivity()).onMovieSelect(MovObj);
+
             }
         });
 
@@ -93,7 +94,7 @@ public class MainActivityFragment extends Fragment {
             }
 
             Picasso.with(context)
-                    .load(imageUrls.get(position))
+                    .load(imageUrls.get(position)).resize(300, 450)
                     .into((ImageView) convertView.findViewById(R.id.grid_item_imageview));
 
             return convertView;
@@ -103,16 +104,16 @@ public class MainActivityFragment extends Fragment {
 
 
     private void updateMovies() {
-        //          FetchWeatherTask weatherTask = new FetchWeatherTask();
-//         //   weatherTask.execute("94043");
-//            // to take the location from the sharedpreference not hard coded
-//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//            //location either get from the sharedprefence file value as pref_location_key is its key or get the default if no value is found
+// check internet connection to avoid crash
+            final ConnectivityManager conMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+            if(activeNetwork != null && activeNetwork.getState() == NetworkInfo.State.CONNECTED)
+            {
 
         FetchMovieTask movieTask = new FetchMovieTask();
    //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        movieTask.execute();
+        movieTask.execute();}
     }
 
     @Override
@@ -132,7 +133,6 @@ public class MainActivityFragment extends Fragment {
         private String[] getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
 
-            // These are the names of the JSON objects that need to be extracted. the values must be exactly the same as the json strings
             final String Poster_Path = "poster_path";
             final String Original_title = "original_title";
             final String Overview = "overview";
@@ -147,14 +147,8 @@ public class MainActivityFragment extends Fragment {
            String[] resultStrs = new String[movieArray.length()];
 
 
-//
-//            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//            // we get the value of the preference from shared preference if it is meteric or imperial then pass the value to format low high
-//            String unitType = sharedPrefs.getString(
-//                    getString(R.string.pref_units_key),
-//                    getString(R.string.pref_units_metric));
 
-           // GetMovieObject [] movieobjArray=null;
+
             MoviesArray.clear();  // if I did not clear the array first when i change the sort setting and go back it changes the pictures but when click details it would be the old data
             for(int i = 0; i < movieArray.length(); i++) {
 
@@ -217,7 +211,7 @@ public class MainActivityFragment extends Fragment {
                                .build();
                        URL url = new URL(builtUri.toString());
                        Log.v(LOG_TAG, "built URI" + builtUri.toString());
-                       // Create the request to OpenWeatherMap, and open the connection
+
                        urlConnection = (HttpURLConnection) url.openConnection();
                        urlConnection.setRequestMethod("GET");
                        urlConnection.connect();
@@ -226,21 +220,19 @@ public class MainActivityFragment extends Fragment {
                        InputStream inputStream = urlConnection.getInputStream();
                        StringBuffer buffer = new StringBuffer();
                        if (inputStream == null) {
-                           // Nothing to do.
+
                            movieJsonStr = null;
                        }
                        reader = new BufferedReader(new InputStreamReader(inputStream));
 
                        String line;
                        while ((line = reader.readLine()) != null) {
-                           // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                           // But it does make debugging a *lot* easier if you print out the completed
-                           // buffer for debugging.
+
                            buffer.append(line + "\n");
                        }
 
                        if (buffer.length() == 0) {
-                           // Stream was empty.  No point in parsing.
+
                            movieJsonStr = null;
                        }
                        movieJsonStr = buffer.toString();
@@ -248,8 +240,7 @@ public class MainActivityFragment extends Fragment {
                        Log.v(LOG_TAG, "movie json string to check data:  " + movieJsonStr);
                    } catch (IOException e) {
                        Log.e(LOG_TAG, "Error ", e);
-                       // If the code didn't successfully get the weather data, there's no point in attempting
-                       // to parse it.
+
                        movieJsonStr = null;
                    } finally {
                        if (urlConnection != null) {
@@ -271,7 +262,7 @@ public class MainActivityFragment extends Fragment {
                    }
                }
             else if(!flag){
-
+                   MoviesArray.clear();
                    MovieDbHelper MovieHelper = new MovieDbHelper (getActivity(),null,null,1);
 
                  String  path[]= MovieHelper.fetchFavoritesImage();
@@ -304,5 +295,10 @@ public class MainActivityFragment extends Fragment {
 
             }
         }
+    }
+
+    //to make mlistener = mainactivity
+    public void setNameListener(listener nameListener) {
+        mListener=nameListener;
     }
 }

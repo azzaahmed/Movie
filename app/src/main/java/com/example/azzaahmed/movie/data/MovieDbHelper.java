@@ -64,9 +64,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
 
         SQLiteDatabase db = getWritableDatabase();
-//        String sql =
-//                "INSERT INTO favorites (Movie_id, name, vote, date,overview) VALUES(2222,'filmyy',27,'03/04/2005','yyyyyyy overview');" ;
-//        db.execSQL(sql);
+
        db.insert(TABLE_Favorites, null, values);
         db.close();
     }
@@ -94,12 +92,12 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Favorites + " WHERE 1";
 
-        //Cursor points to a location in your results
+        //Cursor on the query result
         Cursor c = db.rawQuery(query, null);
         //Move to the first row in your results
         c.moveToFirst();
 
-        //Position after the last row means the end of the results
+        //after the last row means the end of the results
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex("name")) != null) {
                 dbString += c.getString(c.getColumnIndex("name"));
@@ -120,7 +118,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
-        //Position after the last row means the end of the results
+        // after the last row means the end of the results
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_image)) != null) {
                 list.add(c.getString(c.getColumnIndex(COLUMN_image)));
@@ -162,7 +160,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
-        //Position after the last row means the end of the results
+        //after the last row means the end of the results
 
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_vote)) != null) {
@@ -185,8 +183,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
-        //Position after the last row means the end of the results
-
+        //after the last row means the end of the results
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_date)) != null) {
                 list.add(c.getString(c.getColumnIndex(COLUMN_date)));

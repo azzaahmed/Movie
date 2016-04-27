@@ -1,10 +1,14 @@
 package com.example.azzaahmed.movie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,18 +26,15 @@ import java.net.URL;
  */
 
 
-    public class FetchTrailer extends AsyncTask<String,Void,String[]> {  // id of movie is String input, we want to return string so return type String
-        // These two need to be declared outside the try/catch
-// so that they can be closed in the finally block.
+    public class FetchTrailer extends AsyncTask<String,Void,String[]> {
 
     String[] resultStrs;
-
-    private ArrayAdapter<String> Adapter;
     private  Context mContext;
-
-     FetchTrailer(Context context, ArrayAdapter<String> mAdapter) {
-        mContext = context;
-        Adapter = mAdapter;
+    private View rootView;
+   //TextView[] myTextViews;
+    FetchTrailer (Context context, View v){
+        mContext=context;
+        rootView=v;
     }
         private  final String LOG_TAG = FetchTrailer.class.getSimpleName();
 
@@ -47,18 +48,11 @@ import java.net.URL;
 
             resultStrs = new String[trailerArray.length()];
 
+       for(int i = 0; i < trailerArray.length(); i++) {
 
-           // MoviesArray.clear();  // if I did not clear the array first when i change the sort setting and go back it changes the pictures but when click details it would be the old data
-            for(int i = 0; i < trailerArray.length(); i++) {
-
-
-                // Get the JSON object representing the day
                 JSONObject trailer_info = trailerArray.getJSONObject(i);
 
                 String Key = trailer_info.getString("key");
-
-
-
                 resultStrs[i] = Key;
             }
 
@@ -92,7 +86,7 @@ import java.net.URL;
                         .build();
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG,"built URI"+builtUri.toString());
-                // Create the request to OpenWeatherMap, and open the connection
+
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -101,21 +95,19 @@ import java.net.URL;
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    // Nothing to do.
+
                     TrailerJsonStr = null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
+
                     buffer.append(line + "\n");
                 }
 
                 if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
+
                     TrailerJsonStr = null;
                 }
                 TrailerJsonStr = buffer.toString();
@@ -123,8 +115,7 @@ import java.net.URL;
                 Log.v(LOG_TAG, "Trailer json string to check data:  " + TrailerJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
+
                 TrailerJsonStr = null;
             } finally{
                 if (urlConnection != null) {
@@ -148,16 +139,38 @@ import java.net.URL;
         }
 
         @Override
-        protected void onPostExecute(String[] result) {  //result = output od do in background= resultsStr is global to send it to detail activity
+        protected void onPostExecute(final String[] result) {  //result = output od do in background= resultsStr is global to send it to detail activity
 
             if(result!=null){
-                Adapter.clear();
 
-                for(int i=0;i<result.length;i++)
-                {
-                    Adapter.add("trailer"+(i+1)); // add one by one to the adapter
+                    int n= result.length;
+             //   myTextViews = new TextView[n];
+                for(int i=0;i <n;i++) {
+                    // create a new textview
+                    final TextView rowTextView = new TextView(mContext);
+                    rowTextView.setMinHeight(120);
+                    rowTextView.setTextSize(18);
+                    rowTextView.setGravity(Gravity.CENTER);
+                    final int x=i;
+                    // on click on trailer is moved from detail fragment as i can not fetch the textView when clicked there
+                    rowTextView.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent video = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + result[x]));
+                                  mContext.startActivity(video);
+                        }
+                    });
+                    rowTextView.setText("Trailer " + (i + 1));
+                    rootView.findViewById(R.id.trailerLabel).setVisibility(View.VISIBLE);
+                    // add the textview to the linearlayout
+                    ((LinearLayout) rootView.findViewById(R.id.view_trailer)).addView(rowTextView);
+
+                    // save a reference to the textview for later
+                       //   myTextViews[i] = rowTextView;
 
                 }
+
 
             }
         }

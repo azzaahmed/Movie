@@ -16,6 +16,9 @@
     <TextView
         android:id="@+id/detail_text1"
         android:text="hello"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:padding="5dp"
@@ -29,13 +32,20 @@
 
         >
         <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            android:layout_weight="0.4"
             android:id="@+id/detail_image">
         </ImageView>
-    <Button
 
+        <LinearLayout
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content" >
+    <Button
         android:id="@+id/btn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,40 +55,97 @@
 
         <TextView
             android:id="@+id/detail_text2"
+            android:textColor="@color/black"
             android:text="hello"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:padding="5dp"
             />
+
+            <TextView
+                android:id="@+id/detail_text4"
+                android:textColor="@color/black"
+                android:text="hello"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                />
+        </LinearLayout>
     </LinearLayout>
 
 
     <TextView
         android:id="@+id/detail_text3"
+        android:textColor="@color/black"
         android:text="hello"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:padding="5dp"
-        />
-    <TextView
-        android:id="@+id/detail_text4"
-        android:text="hello"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:padding="5dp"
+        android:layout_marginBottom="10dp"
         />
 
-    <ListView
-        android:id="@+id/listview_trailer"
-        android:layout_width="match_parent"
+
+    <TextView
+
+        android:text="Trailers:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:id="@+id/trailerLabel"
+        android:textColor="@color/colorPrimary"
         android:layout_height="wrap_content"
-        android:layout_marginTop="23dp"
+        android:layout_width="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
         />
-    <ListView
-        android:id="@+id/listview_review"
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:showDividers="middle"
+        android:divider="?android:listDivider"
+        android:dividerPadding="5dp"
+        android:orientation="vertical"
+        android:id="@+id/view_trailer"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"></LinearLayout>
+
+    <TextView
+
+        android:text="Reviews:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:id="@+id/reviewLabel"
+        android:textColor="@color/colorPrimary"
         android:layout_height="wrap_content"
-        android:layout_marginTop="23dp"
+        android:layout_width="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
         />
+
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+    android:showDividers="middle"
+    android:divider="?android:listDivider"
+    android:dividerPadding="5dp"
+        android:orientation="vertical"
+        android:id="@+id/view_review"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></LinearLayout>
 </LinearLayout>
 </ScrollView>
+
+<!--<ListView-->
+<!--android:id="@+id/listview_trailer"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:layout_marginTop="23dp"-->
+    <!--/>-->
+    <!--<ListView-->
+        <!--android:id="@+id/listview_review"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="23dp"-->
+        <!--/>-->
+

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,18 +25,16 @@ import java.net.URL;
 
 
 public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of review is String input, we want to return string so return type String
-    // These two need to be declared outside the try/catch
-// so that they can be closed in the finally block.
 
     String[] resultStrs;
-
-    private ArrayAdapter<String> Adapter;
     private  Context mContext;
+    private View rootView;
 
-    FetchReview(Context context, ArrayAdapter<String> mAdapter) {
-        mContext = context;
-        Adapter = mAdapter;
-    }
+        FetchReview(Context context, View v){
+              mContext = context;
+             rootView =v;
+            }
+
     private  final String LOG_TAG = FetchTrailer.class.getSimpleName();
 
 
@@ -46,11 +46,8 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
 
         resultStrs = new String[reviewArray.length()];
 
-        // MoviesArray.clear();  // if I did not clear the array first when i change the sort setting and go back it changes the pictures but when click details it would be the old data
-        for(int i = 0; i < reviewArray.length(); i++) {
+  for(int i = 0; i < reviewArray.length(); i++) {
 
-
-            // Get the JSON object representing the day
             JSONObject review_info = reviewArray.getJSONObject(i);
 
 
@@ -59,14 +56,13 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
             String Author = review_info.getString("author");
 
 
-            resultStrs[i] = Author+":"+"\n"+Content+"\n";
+            resultStrs[i] = Author+":"+"\n\n"+Content+"\n\n";
         }
 
         for (String s : resultStrs) {
             Log.v(LOG_TAG, "review entry: " + s);
         }
         return resultStrs;
-
     }
 
 
@@ -78,7 +74,6 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
         String ReviewJsonStr = null;
 
         try {
-
 
             String Trailer_BASE_URL =
                     "http://api.themoviedb.org/3/movie/";
@@ -92,7 +87,7 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
                     .build();
             URL url = new URL(builtUri.toString());
             Log.v(LOG_TAG,"built URI"+builtUri.toString());
-            // Create the request to OpenWeatherMap, and open the connection
+
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -101,16 +96,14 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
-                // Nothing to do.
+
                 ReviewJsonStr = null;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
+
                 buffer.append(line + "\n");
             }
 
@@ -123,7 +116,7 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
             Log.v(LOG_TAG, "review json string to check data:  " + ReviewJsonStr);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attempting
+            // If the code didn't successfully get the  data, there's no point in attempting
             // to parse it.
             ReviewJsonStr = null;
         } finally{
@@ -148,16 +141,26 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
     }
 
     @Override
-    protected void onPostExecute(String[] result) {  //result = output od do in background= resultsStr is global to send it to detail activity
+    protected void onPostExecute(String[] result) {  //result = output of do in background= resultsStr is global to send it to detail activity
 
         if(result!=null){
-            Adapter.clear();
 
-            for(String x:result)
-            {
-                Adapter.add(x);
 
+            final int n = result.length;
+
+            final TextView[] myTextViews = new TextView[n];
+
+            for (int i = 0; i <n; i++) {
+                // create a new textview
+                final TextView rowTextView = new TextView(mContext);
+                rowTextView.setText(result[i]);
+                rootView.findViewById(R.id.reviewLabel).setVisibility(View.VISIBLE);
+                // add the textview to the linearlayout
+                ((LinearLayout) rootView.findViewById(R.id.view_review)).addView(rowTextView);;
+//                // save a reference to the textview for later
+//                myTextViews[i] = rowTextView;
             }
+
 
         }
     }
