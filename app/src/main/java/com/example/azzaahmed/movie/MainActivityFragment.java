@@ -46,11 +46,11 @@ public class MainActivityFragment extends Fragment {
     private ImageListAdapter imageAdapter;
     private ArrayList<GetMovieInfo> MoviesArray = new ArrayList<GetMovieInfo>();
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
          gridview = (GridView) rootView.findViewById(R.id.gridview);
          imageAdapter =new ImageListAdapter(getActivity(), new ArrayList<String>());
         gridview.setAdapter(imageAdapter);
@@ -207,7 +207,7 @@ public class MainActivityFragment extends Fragment {
                        final String APPID_PARAM = "api_key";
                        Uri builtUri = Uri.parse(Movie_BASE_URL)
                                .buildUpon()
-                               .appendQueryParameter(APPID_PARAM, " ")
+                               .appendQueryParameter(APPID_PARAM, "")
                                .build();
                        URL url = new URL(builtUri.toString());
                        Log.v(LOG_TAG, "built URI" + builtUri.toString());

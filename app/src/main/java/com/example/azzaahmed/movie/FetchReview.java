@@ -83,7 +83,7 @@ public class FetchReview extends AsyncTask<String,Void,String[]> {  // id of rev
                     .buildUpon()
                     .appendPath(params[0])
                     .appendPath("reviews")
-                    .appendQueryParameter(APPID_PARAM, " ")
+                    .appendQueryParameter(APPID_PARAM, "")
                     .build();
             URL url = new URL(builtUri.toString());
             Log.v(LOG_TAG,"built URI"+builtUri.toString());
